@@ -76,6 +76,15 @@ export default function Home() {
     <main>
       {/* ═══════════════════ HERO ═══════════════════ */}
       <section className="relative min-h-screen flex flex-col justify-center items-center px-6 overflow-hidden">
+        {/* Hero background image */}
+        <img
+          src="https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=1600&h=900&fit=crop"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/70" aria-hidden="true" />
         <div className="hero-noise" aria-hidden="true" />
 
         {/* Subtle top nav bar */}
@@ -132,10 +141,10 @@ export default function Home() {
         </div>
 
         {/* Corner accents */}
-        <div className="absolute top-6 left-6 w-12 h-12 border-l border-t border-border/40" />
-        <div className="absolute top-6 right-6 w-12 h-12 border-r border-t border-border/40" />
-        <div className="absolute bottom-6 left-6 w-12 h-12 border-l border-b border-border/40" />
-        <div className="absolute bottom-6 right-6 w-12 h-12 border-r border-b border-border/40" />
+        <div className="absolute top-6 left-6 w-12 h-12 border-l border-t border-border/40 z-[2]" />
+        <div className="absolute top-6 right-6 w-12 h-12 border-r border-t border-border/40 z-[2]" />
+        <div className="absolute bottom-6 left-6 w-12 h-12 border-l border-b border-border/40 z-[2]" />
+        <div className="absolute bottom-6 right-6 w-12 h-12 border-r border-b border-border/40 z-[2]" />
       </section>
 
       {/* ═══════════════════ MARQUEE STRIP ═══════════════════ */}
