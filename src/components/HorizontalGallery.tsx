@@ -1,79 +1,67 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 
 const portfolioItems = [
-  { num: "01", style: "Black & Grey", aspect: "aspect-[3/4]" },
-  { num: "02", style: "Color Realism", aspect: "aspect-[4/5]" },
-  { num: "03", style: "Fine Line", aspect: "aspect-[3/4]" },
-  { num: "04", style: "Japanese", aspect: "aspect-[4/5]" },
-  { num: "05", style: "Neo-Traditional", aspect: "aspect-[3/4]" },
-  { num: "06", style: "Geometric", aspect: "aspect-[4/5]" },
+  { num: "01", style: "Black & Grey", image: "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=600&h=800&fit=crop" },
+  { num: "02", style: "Color Realism", image: "https://images.unsplash.com/photo-1590246815117-a4e636f28ddf?w=600&h=750&fit=crop" },
+  { num: "03", style: "Fine Line", image: "https://images.unsplash.com/photo-1612459284970-e8f027596582?w=600&h=800&fit=crop" },
+  { num: "04", style: "Japanese", image: "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?w=600&h=750&fit=crop" },
+  { num: "05", style: "Neo-Traditional", image: "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?w=600&h=800&fit=crop" },
+  { num: "06", style: "Geometric", image: "https://images.unsplash.com/photo-1542556398-95fb5b9f9304?w=600&h=750&fit=crop" },
 ];
 
 export default function HorizontalGallery() {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollStart = useRef(0);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
     if (!scrollRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
+    isDragging.current = true;
+    startX.current = e.pageX;
+    scrollStart.current = scrollRef.current.scrollLeft;
+    scrollRef.current.style.cursor = "grabbing";
   }, []);
 
-  const handleMouseUp = useCallback(() => setIsDragging(false), []);
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging.current || !scrollRef.current) return;
+    e.preventDefault();
+    scrollRef.current.scrollLeft = scrollStart.current - (e.pageX - startX.current) * 1.2;
+  }, []);
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!isDragging || !scrollRef.current) return;
-      e.preventDefault();
-      const x = e.pageX - scrollRef.current.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      scrollRef.current.scrollLeft = scrollLeft - walk;
-    },
-    [isDragging, startX, scrollLeft]
-  );
+  const stopDrag = useCallback(() => {
+    isDragging.current = false;
+    if (scrollRef.current) scrollRef.current.style.cursor = "grab";
+  }, []);
 
   useEffect(() => {
-    const handleGlobalUp = () => setIsDragging(false);
-    window.addEventListener("mouseup", handleGlobalUp);
-    return () => window.removeEventListener("mouseup", handleGlobalUp);
-  }, []);
+    window.addEventListener("mouseup", stopDrag);
+    return () => window.removeEventListener("mouseup", stopDrag);
+  }, [stopDrag]);
 
   return (
     <div
       ref={scrollRef}
       className="horizontal-scroll px-6 md:px-12 lg:px-20"
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseUp}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={stopDrag}
+      onMouseLeave={stopDrag}
     >
       {portfolioItems.map((item) => (
-        <div
-          key={item.num}
-          className="horizontal-scroll-item w-[300px] md:w-[380px] lg:w-[420px] flex-shrink-0 group"
-        >
-          <div
-            className={`img-placeholder ${item.aspect} w-full mb-4 transition-transform duration-500 group-hover:scale-[1.02]`}
-          >
-            <div className="absolute top-4 left-4 z-10">
-              <span className="font-display text-3xl text-cream/10">
-                {item.num}
-              </span>
+        <div key={item.num} className="horizontal-scroll-item w-[280px] md:w-[340px] lg:w-[380px] flex-shrink-0 group">
+          <div className="aspect-[3/4] w-full mb-4 relative overflow-hidden rounded-sm border border-white/[.06] transition-transform duration-500 group-hover:scale-[1.02]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={item.image} alt={`${item.style} tattoo artwork`} className="absolute inset-0 w-full h-full object-cover" loading="lazy" draggable={false} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+            <div className="absolute top-4 left-4">
+              <span className="font-display text-3xl text-white/20">{item.num}</span>
             </div>
-            <span className="img-placeholder-label">Photo</span>
-          </div>
-          <div className="flex items-center justify-between px-1">
-            <span className="font-display text-sm text-cream/60 italic">
-              {item.style}
-            </span>
-            <span className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
-              {item.num}/06
-            </span>
+            <div className="absolute bottom-4 left-4">
+              <span className="font-display text-sm text-white/80 italic">{item.style}</span>
+            </div>
           </div>
         </div>
       ))}
