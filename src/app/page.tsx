@@ -93,7 +93,7 @@ export default function Home() {
           className="absolute inset-0 w-full h-full object-cover"
         />
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/70" aria-hidden="true" />
+        <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
         <div className="hero-noise" aria-hidden="true" />
 
         {/* Subtle top nav bar */}
